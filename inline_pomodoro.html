@@ -1,0 +1,151 @@
+<div class="pomodoro-wrapper">
+  <style>
+    .pomodoro-wrapper {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f5f7fb;
+      margin: 0;
+    }
+
+    .pomodoro-card {
+      background: #ffffff;
+      padding: 2.5rem 3rem;
+      text-align: center;
+      border-radius: 18px;
+      box-shadow: 0 16px 35px rgba(31, 63, 104, 0.12);
+      max-width: 360px;
+      width: 100%;
+    }
+
+    .pomodoro-title {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: #1f3f68;
+      letter-spacing: 0.02em;
+    }
+
+    .pomodoro-timer {
+      font-size: 3.2rem;
+      font-weight: 600;
+      margin: 1rem 0 1.5rem;
+      color: #273c75;
+    }
+
+    .pomodoro-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pomodoro-button {
+      border: none;
+      padding: 0.75rem 1.6rem;
+      font-size: 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      color: #fff;
+    }
+
+    .pomodoro-button:focus {
+      outline: none;
+    }
+
+    .pomodoro-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(39, 60, 117, 0.15);
+    }
+
+    .pomodoro-start {
+      background: #00a86b;
+    }
+
+    .pomodoro-pause {
+      background: #f0ad4e;
+    }
+
+    .pomodoro-reset {
+      background: #d9534f;
+    }
+
+    .pomodoro-message {
+      font-size: 1rem;
+      color: #1f3f68;
+      min-height: 1.2em;
+    }
+  </style>
+  <div class="pomodoro-card">
+    <h2 class="pomodoro-title">Pomodoro Timer</h2>
+    <div id="pomodoroTimer" class="pomodoro-timer">25:00</div>
+    <div class="pomodoro-controls">
+      <button id="pomodoroStart" class="pomodoro-button pomodoro-start">Start</button>
+      <button id="pomodoroPause" class="pomodoro-button pomodoro-pause">Pause</button>
+      <button id="pomodoroReset" class="pomodoro-button pomodoro-reset">Reset</button>
+    </div>
+    <div id="pomodoroMessage" class="pomodoro-message"></div>
+  </div>
+  <script>
+    (function () {
+      const workDurationMinutes = 25; // Change this number to adjust the default work duration
+      const timerDisplay = document.getElementById("pomodoroTimer");
+      const messageDisplay = document.getElementById("pomodoroMessage");
+      const startButton = document.getElementById("pomodoroStart");
+      const pauseButton = document.getElementById("pomodoroPause");
+      const resetButton = document.getElementById("pomodoroReset");
+
+      let totalSeconds = workDurationMinutes * 60;
+      let remainingSeconds = totalSeconds;
+      let timerInterval = null;
+
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+        const secs = (seconds % 60).toString().padStart(2, "0");
+        return `${mins}:${secs}`;
+      }
+
+      function updateDisplay() {
+        timerDisplay.textContent = formatTime(remainingSeconds);
+      }
+
+      function startTimer() {
+        if (timerInterval) return;
+        messageDisplay.textContent = "";
+        timerInterval = setInterval(() => {
+          if (remainingSeconds > 0) {
+            remainingSeconds -= 1;
+            updateDisplay();
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            messageDisplay.textContent = "Time’s up! Take a break!";
+          }
+        }, 1000);
+      }
+
+      function pauseTimer() {
+        if (!timerInterval) return;
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      function resetTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        remainingSeconds = totalSeconds = workDurationMinutes * 60;
+        updateDisplay();
+        messageDisplay.textContent = "";
+      }
+
+      startButton.addEventListener("click", startTimer);
+      pauseButton.addEventListener("click", pauseTimer);
+      resetButton.addEventListener("click", resetTimer);
+
+      updateDisplay();
+    })();
+  </script>
+</div>
