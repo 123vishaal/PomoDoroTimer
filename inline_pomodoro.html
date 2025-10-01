@@ -100,6 +100,40 @@
       outline-offset: 3px;
     }
 
+    .pomodoro-custom-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      margin-bottom: 2.2rem;
+      flex-wrap: wrap;
+    }
+
+    .pomodoro-custom-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #586586;
+      letter-spacing: 0.02em;
+    }
+
+    .pomodoro-custom-input {
+      width: 110px;
+      padding: 0.6rem 0.75rem;
+      border-radius: 12px;
+      border: 1.5px solid #d4dcef;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: center;
+      color: #2b3a67;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .pomodoro-custom-input:focus {
+      border-color: #4facfe;
+      box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.18);
+      outline: none;
+    }
+
     .pomodoro-controls {
       display: flex;
       justify-content: center;
@@ -173,6 +207,19 @@
       <button class="pomodoro-quick-button" data-minutes="15">15 min</button>
       <button class="pomodoro-quick-button" data-minutes="25">25 min</button>
     </div>
+    <div class="pomodoro-custom-control">
+      <span class="pomodoro-custom-label">Custom minutes</span>
+      <input
+        type="number"
+        id="pomodoroCustomMinutes"
+        class="pomodoro-custom-input"
+        min="1"
+        max="180"
+        step="1"
+        value="25"
+        aria-label="Set custom minutes"
+      />
+    </div>
     <div class="pomodoro-controls">
       <button class="pomodoro-control-button pomodoro-start" id="pomodoroStart">Start</button>
       <button class="pomodoro-control-button pomodoro-pause" id="pomodoroPause">Pause</button>
@@ -198,6 +245,7 @@
       const pauseButton = document.getElementById("pomodoroPause");
       const resetButton = document.getElementById("pomodoroReset");
       const quickTitle = document.getElementById("pomodoroQuickTitle");
+      const customMinutesInput = document.getElementById("pomodoroCustomMinutes");
       const modeButtons = document.querySelectorAll(".pomodoro-mode-button");
       const quickButtons = document.querySelectorAll(".pomodoro-quick-button");
 
@@ -211,6 +259,10 @@
         timerDisplay.textContent = formatTime(remainingSeconds);
       }
 
+      function syncCustomMinutes() {
+        customMinutesInput.value = modes[activeMode].minutes;
+      }
+
       function setMode(mode) {
         if (activeMode === mode) return;
         activeMode = mode;
@@ -220,6 +272,7 @@
           button.classList.toggle("active", button.dataset.mode === mode);
         });
         setDuration(modes[mode].minutes * 60, true);
+        syncCustomMinutes();
       }
 
       function setDuration(seconds, skipUpdateDefault) {
@@ -271,7 +324,15 @@
           const minutes = Number(button.dataset.minutes);
           modes[activeMode].minutes = minutes;
           setDuration(minutes * 60, true);
+          syncCustomMinutes();
         });
+      });
+
+      customMinutesInput.addEventListener("change", () => {
+        const minutes = Math.min(Math.max(Number(customMinutesInput.value) || modes[activeMode].minutes, Number(customMinutesInput.min)), Number(customMinutesInput.max));
+        modes[activeMode].minutes = minutes;
+        customMinutesInput.value = minutes;
+        setDuration(minutes * 60, true);
       });
 
       startButton.addEventListener("click", startTimer);
@@ -279,6 +340,7 @@
       resetButton.addEventListener("click", resetTimer);
 
       updateTimerDisplay();
+      syncCustomMinutes();
     })();
   </script>
 </div>
