@@ -1,0 +1,284 @@
+<div class="pomodoro-wrapper">
+  <style>
+    .pomodoro-wrapper {
+      font-family: "Inter", "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #e3f2fd 0%, #fce4ec 100%);
+      color: #1c2541;
+    }
+
+    .pomodoro-card {
+      background: #ffffff;
+      padding: 2.75rem 3rem 3.25rem;
+      border-radius: 26px;
+      box-shadow: 0 24px 55px rgba(28, 37, 65, 0.18);
+      width: min(92vw, 420px);
+      position: relative;
+      text-align: center;
+    }
+
+    .pomodoro-header {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      background: #f4f6fb;
+      padding: 0.5rem;
+      border-radius: 999px;
+    }
+
+    .pomodoro-mode-button {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #5a6780;
+      padding: 0.65rem 1.2rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .pomodoro-mode-button.active {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(79, 172, 254, 0.35);
+    }
+
+    .pomodoro-timer {
+      font-size: clamp(2.5rem, 7vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      margin-bottom: 2rem;
+      color: #1c2541;
+    }
+
+    .pomodoro-section-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #94a3ba;
+      margin-bottom: 0.75rem;
+    }
+
+    .pomodoro-quick-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 0.65rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .pomodoro-quick-button {
+      border: none;
+      border-radius: 12px;
+      padding: 0.65rem 1.2rem;
+      background: #e6ecff;
+      color: #2b3a67;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .pomodoro-quick-button:hover {
+      transform: translateY(-2px);
+      background: #d1dcff;
+      box-shadow: 0 10px 24px rgba(43, 58, 103, 0.18);
+    }
+
+    .pomodoro-quick-button:focus-visible,
+    .pomodoro-control-button:focus-visible,
+    .pomodoro-mode-button:focus-visible {
+      outline: 3px solid rgba(79, 172, 254, 0.45);
+      outline-offset: 3px;
+    }
+
+    .pomodoro-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .pomodoro-control-button {
+      border: none;
+      padding: 0.75rem 1.9rem;
+      font-size: 1rem;
+      border-radius: 14px;
+      cursor: pointer;
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .pomodoro-control-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 25px rgba(28, 37, 65, 0.18);
+    }
+
+    .pomodoro-start {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .pomodoro-pause {
+      background: linear-gradient(135deg, #ffb347 0%, #ffcc33 100%);
+    }
+
+    .pomodoro-reset {
+      background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+    }
+
+    .pomodoro-message {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      min-height: 1.2em;
+      color: #5a6780;
+    }
+
+    .pomodoro-tagline {
+      font-size: 0.85rem;
+      margin-top: 1.1rem;
+      color: #b0bbd3;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 480px) {
+      .pomodoro-card {
+        padding: 2.2rem 1.8rem 2.6rem;
+      }
+
+      .pomodoro-control-button {
+        width: 100%;
+      }
+    }
+  </style>
+  <div class="pomodoro-card">
+    <div class="pomodoro-header">
+      <button class="pomodoro-mode-button active" data-mode="work" id="pomodoroWorkButton">Work</button>
+      <button class="pomodoro-mode-button" data-mode="break" id="pomodoroBreakButton">Break</button>
+    </div>
+    <div class="pomodoro-timer" id="pomodoroTimer">25:00</div>
+    <div class="pomodoro-section-title" id="pomodoroQuickTitle">Quick set work focus</div>
+    <div class="pomodoro-quick-buttons">
+      <button class="pomodoro-quick-button" data-minutes="5">5 min</button>
+      <button class="pomodoro-quick-button" data-minutes="15">15 min</button>
+      <button class="pomodoro-quick-button" data-minutes="25">25 min</button>
+    </div>
+    <div class="pomodoro-controls">
+      <button class="pomodoro-control-button pomodoro-start" id="pomodoroStart">Start</button>
+      <button class="pomodoro-control-button pomodoro-pause" id="pomodoroPause">Pause</button>
+      <button class="pomodoro-control-button pomodoro-reset" id="pomodoroReset">Reset</button>
+    </div>
+    <div class="pomodoro-message" id="pomodoroMessage">Focus on your current task.</div>
+    <div class="pomodoro-tagline">Work &bull; Breathe &bull; Repeat</div>
+  </div>
+  <script>
+    (function () {
+      const modes = {
+        work: { label: "Work", minutes: 25, message: "Great job! Time for a well-earned break." },
+        break: { label: "Break", minutes: 5, message: "Break over! Ready to dive back into work?" },
+      };
+
+      let activeMode = "work";
+      let remainingSeconds = modes[activeMode].minutes * 60;
+      let timerInterval = null;
+
+      const timerDisplay = document.getElementById("pomodoroTimer");
+      const messageDisplay = document.getElementById("pomodoroMessage");
+      const startButton = document.getElementById("pomodoroStart");
+      const pauseButton = document.getElementById("pomodoroPause");
+      const resetButton = document.getElementById("pomodoroReset");
+      const quickTitle = document.getElementById("pomodoroQuickTitle");
+      const modeButtons = document.querySelectorAll(".pomodoro-mode-button");
+      const quickButtons = document.querySelectorAll(".pomodoro-quick-button");
+
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+        const secs = (seconds % 60).toString().padStart(2, "0");
+        return `${mins}:${secs}`;
+      }
+
+      function updateTimerDisplay() {
+        timerDisplay.textContent = formatTime(remainingSeconds);
+      }
+
+      function setMode(mode) {
+        if (activeMode === mode) return;
+        activeMode = mode;
+        quickTitle.textContent = `Quick set ${modes[mode].label.toLowerCase()} ${mode === "work" ? "focus" : "recharge"}`;
+        messageDisplay.textContent = mode === "work" ? "Focus on your current task." : "Give yourself a mindful pause.";
+        modeButtons.forEach((button) => {
+          button.classList.toggle("active", button.dataset.mode === mode);
+        });
+        setDuration(modes[mode].minutes * 60, true);
+      }
+
+      function setDuration(seconds, skipUpdateDefault) {
+        remainingSeconds = seconds;
+        if (!skipUpdateDefault) {
+          modes[activeMode].minutes = Math.round(seconds / 60);
+        }
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        updateTimerDisplay();
+      }
+
+      function startTimer() {
+        if (timerInterval) return;
+        messageDisplay.textContent = activeMode === "work" ? "You got this!" : "Enjoy the breather.";
+        timerInterval = setInterval(() => {
+          if (remainingSeconds > 0) {
+            remainingSeconds -= 1;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            messageDisplay.textContent = modes[activeMode].message;
+          }
+        }, 1000);
+      }
+
+      function pauseTimer() {
+        if (!timerInterval) return;
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      function resetTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        setDuration(modes[activeMode].minutes * 60, true);
+        messageDisplay.textContent = activeMode === "work" ? "Focus on your current task." : "Give yourself a mindful pause.";
+      }
+
+      modeButtons.forEach((button) => {
+        button.addEventListener("click", () => setMode(button.dataset.mode));
+      });
+
+      quickButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const minutes = Number(button.dataset.minutes);
+          modes[activeMode].minutes = minutes;
+          setDuration(minutes * 60, true);
+        });
+      });
+
+      startButton.addEventListener("click", startTimer);
+      pauseButton.addEventListener("click", pauseTimer);
+      resetButton.addEventListener("click", resetTimer);
+
+      updateTimerDisplay();
+    })();
+  </script>
+</div>
